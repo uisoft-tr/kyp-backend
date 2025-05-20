@@ -1,0 +1,1 @@
+import{aF as e,aE as s,r,aB as n,aI as i}from"./index-iICuzTeq.js";import{au as u}from"./AuthGate-BbxU_GZy.js";const m=()=>{const a=e(),o=s();function t(){a(u())}return r.useEffect(()=>{t(),window.localStorage.removeItem("isLoggedIn"),window.localStorage.removeItem("auth"),o("/login")},[]),n.jsx(i,{})};export{m as default};
