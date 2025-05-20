@@ -46,6 +46,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 INSTALLED_APPS = [
+    'jazzmin',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -98,7 +99,31 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://localhost:5173",  # React uygulamanız
+    'https://kyp.bolge19.com',
+    'http://bolge19.com'
+
 ]
+
+# CSRF ayarları
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000', 
+    'http://localhost:82', 
+    'http://localhost:3001',
+    'http://localhost:80',
+    'http://localhost',
+    'https://attakip.uisoft.cloud',
+    'https://kyp.bolge19.com',
+    'http://bolge19.com'
+]
+CSRF_COOKIE_SECURE = True
+CSRF_USE_SESSIONS = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_AGE = 86400*30 # 1 gün (saniye cinsinden)
+SESSION_COOKIE_DOMAIN = None  # Tüm alt alanlar için, aksi takdirde '.bolge19.com' olabilir
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 MIDDLEWARE = [
