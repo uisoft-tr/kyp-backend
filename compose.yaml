@@ -4,11 +4,11 @@ services:
   web:
     build: .
     ports:
-      - "8001:8000"
+      - "8040:8040"
     volumes:
       - .:/app
-      - static_volume:/app/static  
-      - media_volume:/app/media 
+      - static_volume:/app/static
+      - media_volume:/app/media
     depends_on:
       - db
     environment:
@@ -17,6 +17,15 @@ services:
       - DB_PASSWORD=ardahan91185
       - DB_HOST=db
     platform: linux/amd64  # platform belirtildi
+    command: >
+      sh -c "
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn nsm.wsgi:application --bind 0.0.0.0:8040 --workers 6"
+    networks:
+      - nginx_network
+      - web_network
+    restart: always
 
   db:
     image: postgis/postgis:latest
@@ -30,6 +39,13 @@ services:
     ports:
       - "5433:5432"
     platform: linux/amd64  # platform belirtildi
+    networks:
+      - web_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -38,13 +54,35 @@ services:
       PGADMIN_DEFAULT_EMAIL: info@uisoft.tech
       PGADMIN_DEFAULT_PASSWORD: ardahan91185
     ports:
-      - "5051:80"
+      - "5050:80"
     depends_on:
       - db
     platform: linux/amd64  # platform belirtildi
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "70:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/static
+      - media_volume:/media
+      - ./frontend/dist:/app/frontend/dist
+    depends_on:
+      - web
+    platform: linux/amd64  # platform belirtildi
+    networks:
+      - nginx_network
+    restart: always
 
 volumes:
   postgres_data:
   static_volume:
   pgadmin_data:
   media_volume: # Ortak medya dosyaları için volume
+networks:
+  nginx_network:
+    driver: bridge
+  web_network:
+    driver: bridge
