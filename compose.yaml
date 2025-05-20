@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/static  
+      - media_volume:/app/media 
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=nsm
+      - DB_USER=postgres
+      - DB_PASSWORD=ardahan91185
+      - DB_HOST=db
+    platform: linux/amd64  # platform belirtildi
+
+  db:
+    image: postgis/postgis:latest
+    restart: always
+    environment:
+      POSTGRES_DB: nsm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ardahan91185
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5433:5432"
+    platform: linux/amd64  # platform belirtildi
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: info@uisoft.tech
+      PGADMIN_DEFAULT_PASSWORD: ardahan91185
+    ports:
+      - "5051:80"
+    depends_on:
+      - db
+    platform: linux/amd64  # platform belirtildi
+
+volumes:
+  postgres_data:
+  static_volume:
+  pgadmin_data:
+  media_volume: # Ortak medya dosyaları için volume
